@@ -1367,7 +1367,7 @@ public class EClientSocket {
             	send( contract.m_secId);
             }
 
-            // send main order fields
+            // send Main order fields
             send( order.m_action);
             send( order.m_totalQuantity);
             send( order.m_orderType);

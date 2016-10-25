@@ -20,7 +20,7 @@ public class Order {
     final public static int 	AUCTION_TRANSPARENT = 3;
     final public static String  EMPTY_STR = "";
 
-    // main order fields
+    // Main order fields
     public int 		m_orderId;
     public int 		m_clientId;
     public int  	m_permId;
