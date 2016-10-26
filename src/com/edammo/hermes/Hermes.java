@@ -12,27 +12,41 @@ import com.ib.controller.ApiController;
 import com.ib.controller.Formats;
 import com.ib.controller.Types;
 
-public class Main implements ApiController.IConnectionHandler {
-    static Main INSTANCE = new Main();
+public class Hermes implements ApiController.IConnectionHandler {
+    static Hermes INSTANCE = new Hermes();
 
     private final AndyLogger m_inLogger = new AndyLogger();
     private final AndyLogger m_outLogger = new AndyLogger();
     private final ApiController m_controller = new ApiController( this, m_inLogger, m_outLogger);
+    private final PredictionHubConnection pred_hub_conn = new PredictionHubConnection("127.0.0.1", "8000");
     private final ArrayList<String> m_acctList = new ArrayList<>();
 
     // getter methods
     public ArrayList<String> accountList() 	{ return m_acctList; }
     public ApiController controller() 		{ return m_controller; }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         INSTANCE.run();
     }
 
-    private void run() {
-        // make initial connection to local host, port 7496, client id 0
+    private void run() throws InterruptedException {
         m_controller.connect( "127.0.0.1", 7497, 0);
+        pred_hub_conn.get_configuration();
+        while(true){
+            pred_hub_conn.upload_prices();
+            pred_hub_conn.get_orders();
+            pred_hub_conn.upload_account_status();
+            pred_hub_conn.get_configuration();
+            Thread.sleep(1000);
+        }
     }
 
+    private void get_prices(){}
+    private void place_orders(){}
+    private void get_account_status(){}
+
+
+    // ---------------------------------------- IConnectionHandler ----------------------------------------
     @Override public void connected() {
         show( "connected");
 
@@ -61,7 +75,9 @@ public class Main implements ApiController.IConnectionHandler {
         m_acctList.addAll( list);
     }
 
-    @Override public void show( final String str) {}
+    @Override public void show( final String str) {
+        m_outLogger.log(str);
+    }
 
     @Override public void error(Exception e) {
         show( e.toString() );
