@@ -5,6 +5,7 @@ package com.edammo.hermes;
  * Extended by Andy on 10/25/2016.
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.ib.controller.ApiConnection;
@@ -13,24 +14,32 @@ import com.ib.controller.Formats;
 import com.ib.controller.Types;
 
 public class Hermes implements ApiController.IConnectionHandler {
-    static Hermes INSTANCE = new Hermes();
 
     private final AndyLogger m_inLogger = new AndyLogger();
     private final AndyLogger m_outLogger = new AndyLogger();
     private final ApiController m_controller = new ApiController( this, m_inLogger, m_outLogger);
-    private final PredictionHubConnection pred_hub_conn = new PredictionHubConnection("127.0.0.1", "8000");
     private final ArrayList<String> m_acctList = new ArrayList<>();
+    private final PredictionHubConnection pred_hub_conn;
 
     // getter methods
     public ArrayList<String> accountList() 	{ return m_acctList; }
     public ApiController controller() 		{ return m_controller; }
 
-    public static void main(String[] args) throws InterruptedException{
-        INSTANCE.run();
+    private Hermes() throws IOException {
+        pred_hub_conn = new PredictionHubConnection("127.0.0.1", "8000");
     }
 
-    private void run() throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException{
+        try{
+            new Hermes().middleman_loop();
+        } catch (IOException e){
+            System.exit(-1);
+        }
+    }
+
+    private void middleman_loop() throws InterruptedException, IOException {
         m_controller.connect( "127.0.0.1", 7497, 0);
+        pred_hub_conn.connect();
         pred_hub_conn.get_configuration();
         while(true){
             pred_hub_conn.upload_prices();

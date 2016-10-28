@@ -5,29 +5,53 @@ package com.edammo.hermes;
  */
 
 import java.net.*;
+import java.io.IOException;
+
 
 public class PredictionHubConnection {
-    private final String UPDATE_PRICES_URL = "predictions/update_prices/";
-    private final String GET_ORDERS_URL = "";
-    private final String GET_CONFIG_URL = "";
+    private static final String GET_CONFIG_URL = "/api/hermes/configuration";
+    private static final String UPDATE_PRICES_URL = "/predictions/update_prices/";
+    private static final String GET_ORDERS_URL = "/api/hermes/orders";
 
-    private final String prediction_hub_ip;
-    private final String prediction_hub_port;
+    private final HttpURLConnection config_conn;
+    private final HttpURLConnection prices_conn;
+    private final HttpURLConnection orders_conn;
 
-    public PredictionHubConnection(String prediction_hub_ip, String prediction_hub_port){
-        this.prediction_hub_ip = prediction_hub_ip;
-        this.prediction_hub_port = prediction_hub_port;
+    PredictionHubConnection(String prediction_hub_ip, String prediction_hub_port)
+            throws MalformedURLException, IOException {
+        try {
+            // ping prediction hub here to test server
+            URL config_url = new URL("http://" + prediction_hub_ip + ":" + prediction_hub_port + GET_CONFIG_URL);
+            URL prices_url = new URL("http://" + prediction_hub_ip + ":" + prediction_hub_port + UPDATE_PRICES_URL);
+            URL orders_url = new URL("http://" + prediction_hub_ip + ":" + prediction_hub_port + GET_ORDERS_URL);
+
+            config_conn = (HttpURLConnection) config_url.openConnection();
+            prices_conn = (HttpURLConnection) prices_url.openConnection();
+            orders_conn = (HttpURLConnection) orders_url.openConnection();
+        } catch (MalformedURLException e){
+            throw e;
+        } catch (IOException e) {
+            System.out.println("Unable to connect to the Prediction Hub");
+            throw e;
+        }
+    }
+    void connect() throws IOException {
+        try{
+            config_conn.connect();
+            prices_conn.connect();
+            orders_conn.connect();
+        } catch (IOException e) {
+            System.out.println("Unable to connect to the Prediction Hub");
+            throw e;
+        }
     }
 
-    public void get_configuration(){
+    void get_configuration(){
     }
 
-    public void upload_prices(){
-    }
+    void upload_prices(){}
 
-    public void upload_account_status(){
-    }
+    void upload_account_status(){}
 
-    public void get_orders(){
-    }
+    void get_orders(){}
 }
