@@ -35,12 +35,6 @@ class Hermes {
 
         @Key
         public String currency;
-
-        @Key
-        public List<String> stock_symbols;
-
-        @Key
-        public List<String> stock_exchanges;
     }
 
     public static class ActionList {
@@ -66,14 +60,6 @@ class Hermes {
     }
 
     private static class HermesContract extends NewContract {
-        HermesContract(Configuration c, int index) {
-            this.symbol(c.stock_symbols.get(index));
-            this.secType(Types.SecType.STK);
-            this.exchange("SMART");
-            this.primaryExch(c.stock_exchanges.get(index));
-            this.currency(c.currency);
-        }
-
         HermesContract(Action a, Configuration c) {
             this.symbol(a.symbol);
             this.secType(Types.SecType.STK);
