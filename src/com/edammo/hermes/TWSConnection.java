@@ -41,9 +41,7 @@ public class TWSConnection implements ApiController.IConnectionHandler {
     private void middleman_loop() throws InterruptedException, IOException {
         hermes.get_configuration();
         while(true){
-            hermes.upload_prices();
             place_orders(hermes.get_orders());
-            hermes.upload_account_status();
             hermes.get_configuration();
             Thread.sleep(1000);
         }
