@@ -25,14 +25,14 @@ public class TWSConnection implements ApiController.IConnectionHandler {
     public ArrayList<String> accountList() 	{ return m_acctList; }
     public ApiController controller() 		{ return m_controller; }
 
-    private TWSConnection() throws IOException {
-        m_controller.connect( "127.0.0.1", 7497, 0);
-        hermes = new Hermes("127.0.0.1", "8000");
+    private TWSConnection(String TWS_ip, String TWS_port, String edammo_ip, String edammo_port) throws IOException {
+        m_controller.connect( TWS_ip, Integer.parseInt(TWS_port), 0);
+        hermes = new Hermes(edammo_ip, edammo_port);
     }
 
     public static void main(String[] args) throws InterruptedException{
         try{
-            new TWSConnection().middleman_loop();
+            new TWSConnection(args[0], args[1], args[2], args[3]).middleman_loop();
         } catch (IOException e){
             System.exit(-1);
         }
