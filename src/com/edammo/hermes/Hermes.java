@@ -126,12 +126,4 @@ class Hermes {
         }
         return order_list;
     }
-
-    List<HermesContract> get_current_stocks() {
-        ArrayList<HermesContract> cur_stocks = new ArrayList<>();
-        for (int i = 1; i < config.stock_symbols.size(); i++) {
-            cur_stocks.add(new HermesContract(config, i));
-        }
-        return cur_stocks;
-    }
 }
