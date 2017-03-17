@@ -24,8 +24,6 @@ from ibapi.contract import *
 from ibapi.order import *
 from ibapi.ticktype import *
 
-from ContractSamples import ContractSamples
-
 
 def SetupLogger():
     if not os.path.exists("log"):
@@ -162,17 +160,54 @@ class TestWrapper(wrapper.EWrapper):
             # print("TestClient.wrapMeth2reqIdIdx", self.wrapMeth2reqIdIdx)
 
 
-# this is here for documentation generation
-"""
-#! [ereader]
-        #this code is in Client::connect() so it's automatically done, no need
-        # for user to do it
-        self.reader = reader.EReader(self.conn, self.msg_queue)
-        self.reader.start()   # start thread
+class Contracts:
+    @staticmethod
+    def USStock():
+        # ! [stkcontract]
+        contract = Contract()
+        contract.symbol = "IBKR"
+        contract.secType = "STK"
+        contract.currency = "USD"
+        # In the API side, NASDAQ is always defined as ISLAND in the exchange field
+        contract.exchange = "ISLAND"
+        # ! [stkcontract]
+        return contract
 
-#! [ereader]
-"""
+    @staticmethod
+    def AMZN():
+        # ! [stkcontractwithprimary]
+        contract = Contract()
+        contract.symbol = "AMZN"
+        contract.secType = "STK"
+        contract.currency = "USD"
+        contract.exchange = "ISLAND"
+        # Specify the Primary Exchange attribute to avoid contract ambiguity
+        # ! [stkcontractwithprimary]
+        return contract
 
+    @staticmethod
+    def AAPL():
+        # ! [stkcontractwithprimary]
+        contract = Contract()
+        contract.symbol = "AAPL"
+        contract.secType = "STK"
+        contract.currency = "USD"
+        contract.exchange = "ISLAND"
+        # Specify the Primary Exchange attribute to avoid contract ambiguity
+        # ! [stkcontractwithprimary]
+        return contract
+
+    @staticmethod
+    def MSFT():
+        # ! [stkcontractwithprimary]
+        contract = Contract()
+        contract.symbol = "FB"
+        contract.secType = "STK"
+        contract.currency = "USD"
+        contract.exchange = "ISLAND"
+        # Specify the Primary Exchange attribute to avoid contract ambiguity
+        # ! [stkcontractwithprimary]
+        return contract
 
 # ! [socket_init]
 class TestApp(TestWrapper, TestClient):
@@ -238,20 +273,6 @@ class TestApp(TestWrapper, TestClient):
             self.marketDataType_req()
             self.tickDataOperations_req()
 
-            '''These are calls we don't need currently'''
-            #self.marketDepthOperations_req()
-            #self.realTimeBars_req()
-            #self.historicalDataRequests_req()
-            #self.optionsOperations_req()
-            #self.marketScanners_req()
-            #self.reutersFundamentals_req()
-            #self.bulletins_req()
-            #self.contractOperations_req()
-            #self.contractNewsFeed_req()
-            #self.miscelaneous_req()
-            #self.linkingOperations()
-            #self.financialAdvisorOperations()
-            #self.orderOperations_req()
             print("Executing requests ... finished")
 
     def keyboardInterrupt(self):
@@ -284,72 +305,14 @@ class TestApp(TestWrapper, TestClient):
     def winError(self, text: str, lastError: int):
         super().winError(text, lastError)
 
-    @iswrapper
-    # ! [familyCodes]
-    def familyCodes(self, familyCodes: ListOfFamilyCode):
-        super().familyCodes(familyCodes)
-        print("Family Codes:")
-        for familyCode in familyCodes:
-            print("Account ID: %s, Family Code Str: %s" % (
-                familyCode.accountID, familyCode.familyCodeStr))
-    # ! [familyCodes]
-    def marketDataType_req(self):
-        # ! [reqmarketdatatype]
-        # Switch to live (1) frozen (2) delayed (3) delayed frozen (4).
-        self.reqMarketDataType(MarketDataTypeEnum.DELAYED)
-        # ! [reqmarketdatatype]
-    @iswrapper
-    # ! [marketdatatype]
-    def marketDataType(self, reqId: TickerId, marketDataType: int):
-        super().marketDataType(reqId, marketDataType)
-        print("MarketDataType. ", reqId, "Type:", marketDataType)
-    # ! [marketdatatype]
-
-
     @printWhenExecuting
     def tickDataOperations_req(self):
         # Requesting real time market data
 
         # ! [reqmktdata]
-        self.reqMktData(1003, ContractSamples.MSFT(), "", False, False, [])
-        self.reqMktData(1101, ContractSamples.AMZN(), "", False, False, [])
-        self.reqMktData(1102, ContractSamples.AAPL(), "", False, False, [])
-
-        # self.reqMktData(1001, ContractSamples.StockComboContract(), "", True, False, [])
-        # ! [reqmktdata]
-
-        # ! [reqmktdata_snapshot]
-        #self.reqMktData(1003, ContractSamples.FutureComboContract(), "", False, False, [])
-        # ! [reqmktdata_snapshot]
-
-        # ! [regulatorysnapshot]
-        # self.reqMktData(1014, ContractSamples.USStock(), "", False, True, [])
-        # ! [regulatorysnapshot]
-
-        # ! [reqmktdata_genticks]
-        # Requesting RTVolume (Time & Sales), shortable and Fundamental Ratios generic ticks
-        #self.reqMktData(1004, ContractSamples.USStock(), "233,236,258", False, False, [])
-        # ! [reqmktdata_genticks]
-
-        # ! [reqmktdata_contractnews]
-        #self.reqMktData(1005, ContractSamples.USStock(), "mdoff,292:BZ", False, False, [])
-        #self.reqMktData(1006, ContractSamples.USStock(), "mdoff,292:BT", False, False, [])
-        #self.reqMktData(1007, ContractSamples.USStock(), "mdoff,292:FLY", False, False, [])
-        #self.reqMktData(1008, ContractSamples.USStock(), "mdoff,292:MT", False, False, [])
-        # ! [reqmktdata_contractnews]
-
-
-        # ! [reqmktdata_broadtapenews]
-        #self.reqMktData(1009, ContractSamples.BTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        #self.reqMktData(1010, ContractSamples.BZbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        #self.reqMktData(1011, ContractSamples.FLYbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        #self.reqMktData(1012, ContractSamples.MTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        ## ! [reqmktdata_broadtapenews]
-
-        # ! [reqoptiondatagenticks]
-        # Requesting data for an option contract will return the greek values
-        #self.reqMktData(1002, ContractSamples.OptionWithLocalSymbol(), "", False, False, [])
-        # ! [reqoptiondatagenticks]
+        self.reqMktData(1003, Contracts.MSFT(), "", False, False, [])
+        self.reqMktData(1101, Contracts.AMZN(), "", False, False, [])
+        self.reqMktData(1102, Contracts.AAPL(), "", False, False, [])
 
         # ! [reqsmartcomponents]
         # Requests description of map of single letter exchange codes to full exchange names
@@ -382,72 +345,6 @@ class TestApp(TestWrapper, TestClient):
 
 
     @iswrapper
-    # ! [tickgeneric]
-    def tickGeneric(self, reqId: TickerId, tickType: TickType, value: float):
-        super().tickGeneric(reqId, tickType, value)
-        print("Tick Generic. Ticker Id:", reqId, "Value:", value)
-    # ! [tickgeneric]
-
-
-    @iswrapper
-    # ! [tickstring]
-    def tickString(self, reqId: TickerId, tickType: TickType, value: str):
-        super().tickString(reqId, tickType, value)
-        print("Tick string. Ticker Id:", reqId, "Value:", value)
-    # ! [tickstring]
-
-    @iswrapper
-    # ! [ticksnapshotend]
-    def tickSnapshotEnd(self, reqId: int):
-        super().tickSnapshotEnd(reqId)
-        print("TickSnapshotEnd:", reqId)
-    # ! [ticksnapshotend]
-
-    @iswrapper
-    # ! [contractdetails]
-    def contractDetails(self, reqId: int, contractDetails: ContractDetails):
-        super().contractDetails(reqId, contractDetails)
-        print("ContractDetails. ReqId:", reqId, contractDetails.summary.symbol,
-              contractDetails.summary.secType, "ConId:", contractDetails.summary.conId,
-              "@", contractDetails.summary.exchange)
-    # ! [contractdetails]
-
-
-    @iswrapper
-    # ! [bondcontractdetails]
-    def bondContractDetails(self, reqId: int, contractDetails: ContractDetails):
-        super().bondContractDetails(reqId, contractDetails)
-    # ! [bondcontractdetails]
-
-    @iswrapper
-    # ! [contractdetailsend]
-    def contractDetailsEnd(self, reqId: int):
-        super().contractDetailsEnd(reqId)
-        print("ContractDetailsEnd. ", reqId, "\n")
-    # ! [contractdetailsend]
-
-    @iswrapper
-    # ! [symbolSamples]
-    def symbolSamples(self, reqId: int,
-                      contractDescriptions: ListOfContractDescription):
-        super().symbolSamples(reqId, contractDescriptions)
-        print("Symbol Samples. Request Id: ", reqId)
-
-        for contractDescription in contractDescriptions:
-            derivSecTypes = ""
-            for derivSecType in contractDescription.DerivativeSecTypes:
-                derivSecTypes += derivSecType
-                derivSecTypes += " "
-            print("Contract: conId:%s, symbol:%s, secType:%s primExchange:%s, currency:%s, derivativeSecTypes:%s" % (
-                contractDescription.contract.conId,
-                contractDescription.contract.symbol,
-                contractDescription.contract.secType,
-                contractDescription.contract.primaryExch,
-                contractDescription.contract.currency, derivSecTypes))
-    # ! [symbolSamples]
-
-
-    @iswrapper
     # ! [smartcomponents]
     def smartComponents(self, reqId:int, map:SmartComponentMap):
         super().smartComponents(reqId, map)
@@ -456,21 +353,11 @@ class TestApp(TestWrapper, TestClient):
             print(exch.bitNumber, ", Exchange Name: ", exch.exchange, ", Letter: ", exch.exchangeLetter)
     # ! [smartcomponents]
 
-    @iswrapper
-    # ! [tickReqParams]
-    def tickReqParams(self, tickerId:int, minTick:float, bboExchange:str, snapshotPermissions:int):
-        super().tickReqParams(tickerId, minTick, bboExchange, snapshotPermissions)
-        print("tickReqParams: ", tickerId, " minTick: ", minTick, " bboExchange: ", bboExchange, " snapshotPermissions: ", snapshotPermissions)
-    # ! [tickReqParams]
-
-    @iswrapper
-    # ! [mktDepthExchanges]
-    def mktDepthExchanges(self, depthMktDataDescriptions:ListOfDepthExchanges):
-        super().mktDepthExchanges(depthMktDataDescriptions)
-        print("mktDepthExchanges:")
-        for desc in depthMktDataDescriptions:
-            print(desc)
-    # ! [mktDepthExchanges]
+    def marketDataType_req(self):
+        # ! [reqmarketdatatype]
+        # Switch to live (1) frozen (2) delayed (3) delayed frozen (4).
+        self.reqMarketDataType(MarketDataTypeEnum.DELAYED)
+    # ! [reqmarketdatatype]
 
     @printWhenExecuting
     def miscelaneous_req(self):
@@ -478,45 +365,6 @@ class TestApp(TestWrapper, TestClient):
         self.reqCurrentTime()
         # Setting TWS logging level  ***/
         self.setServerLogLevel(1)
-
-    @printWhenExecuting
-    def linkingOperations(self):
-        self.verifyRequest("a name", "9.71")
-        self.verifyMessage("apiData")
-        self.verifyAndAuthMessage("apiData", "xyz")
-        self.verifyAndAuthRequest("a name", "9.71", "key")
-
-        # ! [querydisplaygroups]
-        self.queryDisplayGroups(19001)
-        # ! [querydisplaygroups]
-
-        # ! [subscribetogroupevents]
-        self.subscribeToGroupEvents(19002, 1)
-        # ! [subscribetogroupevents]
-
-        # ! [updatedisplaygroup]
-        self.updateDisplayGroup(19002, "8314@SMART")
-        # ! [updatedisplaygroup]
-
-        # ! [subscribefromgroupevents]
-        self.unsubscribeFromGroupEvents(19002)
-        # ! [subscribefromgroupevents]
-
-    @iswrapper
-    # ! [displaygrouplist]
-    def displayGroupList(self, reqId: int, groups: str):
-        super().displayGroupList(reqId, groups)
-        print("DisplayGroupList. Request: ", reqId, "Groups", groups)
-    # ! [displaygrouplist]
-
-
-    @iswrapper
-    # ! [displaygroupupdated]
-    def displayGroupUpdated(self, reqId: int, contractInfo: str):
-        super().displayGroupUpdated(reqId, contractInfo)
-        print("displayGroupUpdated. Request:", reqId, "ContractInfo:", contractInfo)
-
-    # ! [displaygroupupdated]
 
 def main():
     SetupLogger()
@@ -564,9 +412,6 @@ def main():
 
     try:
         app = TestApp()
-        if args.global_cancel:
-            app.globalCancelOnly = True
-        # ! [connect]
         app.connect("127.0.0.1", args.port, clientId=0)
         print("serverVersion:%s connectionTime:%s" % (app.serverVersion(),
                                                       app.twsConnectionTime()))
