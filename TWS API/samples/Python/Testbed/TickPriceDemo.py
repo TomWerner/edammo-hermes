@@ -201,7 +201,7 @@ class Contracts:
     def MSFT():
         # ! [stkcontractwithprimary]
         contract = Contract()
-        contract.symbol = "FB"
+        contract.symbol = "MSFT"
         contract.secType = "STK"
         contract.currency = "USD"
         contract.exchange = "ISLAND"
@@ -288,10 +288,6 @@ class TestApp(TestWrapper, TestClient):
         self.tickDataOperations_cancel()
         print("Executing cancels ... finished")
 
-    def nextOrderId(self):
-        oid = self.nextValidOrderId
-        self.nextValidOrderId += 1
-        return oid
 
     @iswrapper
     # ! [error]
