@@ -249,21 +249,21 @@ class TestApp(TestWrapper, TestClient):
             print("Executing requests")
             self.reqGlobalCancel()
             self.marketDataType_req()
-            self.accountOperations_req()
+            #self.accountOperations_req()
             self.tickDataOperations_req()
-            self.marketDepthOperations_req()
+            #self.marketDepthOperations_req()
             self.realTimeBars_req()
-            self.historicalDataRequests_req()
-            self.optionsOperations_req()
-            self.marketScanners_req()
-            self.reutersFundamentals_req()
-            self.bulletins_req()
-            self.contractOperations_req()
-            self.contractNewsFeed_req()
-            self.miscelaneous_req()
-            self.linkingOperations()
-            self.financialAdvisorOperations()
-            self.orderOperations_req()
+            #self.historicalDataRequests_req()
+            #self.optionsOperations_req()
+            #self.marketScanners_req()
+            #self.reutersFundamentals_req()
+            #self.bulletins_req()
+            #self.contractOperations_req()
+            #self.contractNewsFeed_req()
+            #self.miscelaneous_req()
+            #self.linkingOperations()
+            #self.financialAdvisorOperations()
+            #self.orderOperations_req()
             print("Executing requests ... finished")
 
     def keyboardInterrupt(self):
@@ -587,12 +587,13 @@ class TestApp(TestWrapper, TestClient):
         # Requesting real time market data
 
         # ! [reqmktdata]
-        self.reqMktData(1101, ContractSamples.USStockAtSmart(), "", False, False, [])
-        self.reqMktData(1001, ContractSamples.StockComboContract(), "", True, False, [])
+        self.reqMktData(1101, ContractSamples.AMZN(), "", False, False, [])
+        self.reqMktData(1102, ContractSamples.AAPL(), "", False, False, [])
+        # self.reqMktData(1001, ContractSamples.StockComboContract(), "", True, False, [])
         # ! [reqmktdata]
 
         # ! [reqmktdata_snapshot]
-        self.reqMktData(1003, ContractSamples.FutureComboContract(), "", False, False, [])
+        #self.reqMktData(1003, ContractSamples.FutureComboContract(), "", False, False, [])
         # ! [reqmktdata_snapshot]
 
         # ! [regulatorysnapshot]
@@ -601,27 +602,27 @@ class TestApp(TestWrapper, TestClient):
 
         # ! [reqmktdata_genticks]
         # Requesting RTVolume (Time & Sales), shortable and Fundamental Ratios generic ticks
-        self.reqMktData(1004, ContractSamples.USStock(), "233,236,258", False, False, [])
+        #self.reqMktData(1004, ContractSamples.USStock(), "233,236,258", False, False, [])
         # ! [reqmktdata_genticks]
 
         # ! [reqmktdata_contractnews]
-        self.reqMktData(1005, ContractSamples.USStock(), "mdoff,292:BZ", False, False, [])
-        self.reqMktData(1006, ContractSamples.USStock(), "mdoff,292:BT", False, False, [])
-        self.reqMktData(1007, ContractSamples.USStock(), "mdoff,292:FLY", False, False, [])
-        self.reqMktData(1008, ContractSamples.USStock(), "mdoff,292:MT", False, False, [])
+        #self.reqMktData(1005, ContractSamples.USStock(), "mdoff,292:BZ", False, False, [])
+        #self.reqMktData(1006, ContractSamples.USStock(), "mdoff,292:BT", False, False, [])
+        #self.reqMktData(1007, ContractSamples.USStock(), "mdoff,292:FLY", False, False, [])
+        #self.reqMktData(1008, ContractSamples.USStock(), "mdoff,292:MT", False, False, [])
         # ! [reqmktdata_contractnews]
 
 
         # ! [reqmktdata_broadtapenews]
-        self.reqMktData(1009, ContractSamples.BTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        self.reqMktData(1010, ContractSamples.BZbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        self.reqMktData(1011, ContractSamples.FLYbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        self.reqMktData(1012, ContractSamples.MTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
-        # ! [reqmktdata_broadtapenews]
+        #self.reqMktData(1009, ContractSamples.BTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
+        #self.reqMktData(1010, ContractSamples.BZbroadtapeNewsFeed(), "mdoff,292", False, False, [])
+        #self.reqMktData(1011, ContractSamples.FLYbroadtapeNewsFeed(), "mdoff,292", False, False, [])
+        #self.reqMktData(1012, ContractSamples.MTbroadtapeNewsFeed(), "mdoff,292", False, False, [])
+        ## ! [reqmktdata_broadtapenews]
 
         # ! [reqoptiondatagenticks]
         # Requesting data for an option contract will return the greek values
-        self.reqMktData(1002, ContractSamples.OptionWithLocalSymbol(), "", False, False, [])
+        #self.reqMktData(1002, ContractSamples.OptionWithLocalSymbol(), "", False, False, [])
         # ! [reqoptiondatagenticks]
 
         # ! [reqsmartcomponents]
@@ -644,9 +645,7 @@ class TestApp(TestWrapper, TestClient):
     def tickPrice(self, reqId: TickerId, tickType: TickType, price: float,
                   attrib: TickAttrib):
         super().tickPrice(reqId, tickType, price, attrib)
-        print("Tick Price. Ticker Id:", reqId, "tickType:", tickType, "Price:",
-              price, "CanAutoExecute:", attrib.canAutoExecute,
-              "PastLimit", attrib.pastLimit)
+        print("Tick Price. Ticker Id:", reqId, "Price:", price)
 
     # ! [tickprice]
 
