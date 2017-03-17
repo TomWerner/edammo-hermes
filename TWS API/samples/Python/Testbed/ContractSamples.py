@@ -171,6 +171,18 @@ class ContractSamples:
         # ! [stkcontractwithprimary]
         return contract
 
+    @staticmethod
+    def MSFT():
+        # ! [stkcontractwithprimary]
+        contract = Contract()
+        contract.symbol = "FB"
+        contract.secType = "STK"
+        contract.currency = "USD"
+        contract.exchange = "ISLAND"
+        # Specify the Primary Exchange attribute to avoid contract ambiguity
+        # ! [stkcontractwithprimary]
+        return contract
+
             
     @staticmethod
     def USStockAtSmart():
