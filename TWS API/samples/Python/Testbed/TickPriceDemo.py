@@ -47,15 +47,6 @@ def SetupLogger():
     logger.addHandler(console)
 
 
-def printWhenExecuting(fn):
-    def fn2(self):
-        print("   doing", fn.__name__)
-        fn(self)
-        print("   done w/", fn.__name__)
-
-    return fn2
-
-
 class Activity(Object):
     def __init__(self, reqMsgId, ansMsgId, ansEndMsgId, reqId):
         self.reqMsdId = reqMsgId
@@ -75,90 +66,6 @@ class RequestMgr(Object):
 
     def receivedMsg(self, msg):
         pass
-
-
-# ! [socket_declare]
-class TestClient(EClient):
-    def __init__(self, wrapper):
-        EClient.__init__(self, wrapper)
-        # ! [socket_declare]
-
-        # how many times a method is called to see test coverage
-        self.clntMeth2callCount = collections.defaultdict(int)
-        self.clntMeth2reqIdIdx = collections.defaultdict(lambda: -1)
-        self.reqId2nReq = collections.defaultdict(int)
-        self.setupDetectReqId()
-
-    def countReqId(self, methName, fn):
-        def countReqId_(*args, **kwargs):
-            self.clntMeth2callCount[methName] += 1
-            idx = self.clntMeth2reqIdIdx[methName]
-            if idx >= 0:
-                sign = -1 if 'cancel' in methName else 1
-                self.reqId2nReq[sign * args[idx]] += 1
-            return fn(*args, **kwargs)
-
-        return countReqId_
-
-    def setupDetectReqId(self):
-
-        methods = inspect.getmembers(EClient, inspect.isfunction)
-        for (methName, meth) in methods:
-            if methName != "send_msg":
-                # don't screw up the nice automated logging in the send_msg()
-                self.clntMeth2callCount[methName] = 0
-                # logging.debug("meth %s", name)
-                sig = inspect.signature(meth)
-                for (idx, pnameNparam) in enumerate(sig.parameters.items()):
-                    (paramName, param) = pnameNparam
-                    if paramName == "reqId":
-                        self.clntMeth2reqIdIdx[methName] = idx
-
-                setattr(TestClient, methName, self.countReqId(methName, meth))
-
-                # print("TestClient.clntMeth2reqIdIdx", self.clntMeth2reqIdIdx)
-
-
-# ! [ewrapperimpl]
-class TestWrapper(wrapper.EWrapper):
-    # ! [ewrapperimpl]
-    def __init__(self):
-        wrapper.EWrapper.__init__(self)
-
-        self.wrapMeth2callCount = collections.defaultdict(int)
-        self.wrapMeth2reqIdIdx = collections.defaultdict(lambda: -1)
-        self.reqId2nAns = collections.defaultdict(int)
-        self.setupDetectWrapperReqId()
-
-    # TODO: see how to factor this out !!
-
-    def countWrapReqId(self, methName, fn):
-        def countWrapReqId_(*args, **kwargs):
-            self.wrapMeth2callCount[methName] += 1
-            idx = self.wrapMeth2reqIdIdx[methName]
-            if idx >= 0:
-                self.reqId2nAns[args[idx]] += 1
-            return fn(*args, **kwargs)
-
-        return countWrapReqId_
-
-    def setupDetectWrapperReqId(self):
-
-        methods = inspect.getmembers(wrapper.EWrapper, inspect.isfunction)
-        for (methName, meth) in methods:
-            self.wrapMeth2callCount[methName] = 0
-            # logging.debug("meth %s", name)
-            sig = inspect.signature(meth)
-            for (idx, pnameNparam) in enumerate(sig.parameters.items()):
-                (paramName, param) = pnameNparam
-                # we want to count the errors as 'error' not 'answer'
-                if 'error' not in methName and paramName == "reqId":
-                    self.wrapMeth2reqIdIdx[methName] = idx
-
-            setattr(TestWrapper, methName, self.countWrapReqId(methName, meth))
-
-            # print("TestClient.wrapMeth2reqIdIdx", self.wrapMeth2reqIdIdx)
-
 
 class Contracts:
     @staticmethod
@@ -210,34 +117,17 @@ class Contracts:
         return contract
 
 # ! [socket_init]
-class TestApp(TestWrapper, TestClient):
+class TestApp(wrapper.EWrapper, EClient):
     def __init__(self):
-        TestWrapper.__init__(self)
-        TestClient.__init__(self, wrapper=self)
+        wrapper.EWrapper.__init__(self)
+        EClient.__init__(self, wrapper=self)
         # ! [socket_init]
         self.nKeybInt = 0
         self.started = False
         self.nextValidOrderId = None
         self.permId2ord = {}
         self.reqId2nErr = collections.defaultdict(int)
-        self.globalCancelOnly = False
 
-    def dumpTestCoverageSituation(self):
-        for clntMeth in sorted(self.clntMeth2callCount.keys()):
-            logging.debug("ClntMeth: %-30s %6d" % (clntMeth,
-                                                   self.clntMeth2callCount[clntMeth]))
-
-        for wrapMeth in sorted(self.wrapMeth2callCount.keys()):
-            logging.debug("WrapMeth: %-30s %6d" % (wrapMeth,
-                                                   self.wrapMeth2callCount[wrapMeth]))
-
-    def dumpReqAnsErrSituation(self):
-        logging.debug("%s\t%s\t%s\t%s" % ("ReqId", "#Req", "#Ans", "#Err"))
-        for reqId in sorted(self.reqId2nReq.keys()):
-            nReq = self.reqId2nReq.get(reqId, 0)
-            nAns = self.reqId2nAns.get(reqId, 0)
-            nErr = self.reqId2nErr.get(reqId, 0)
-            logging.debug("%d\t%d\t%s\t%d" % (reqId, nReq, nAns, nErr))
 
     @iswrapper
     # ! [connectack]
@@ -264,16 +154,11 @@ class TestApp(TestWrapper, TestClient):
 
         self.started = True
 
-        if self.globalCancelOnly:
-            print("Executing GlobalCancel only")
-            self.reqGlobalCancel()
-        else:
-            print("Executing requests")
-            self.reqGlobalCancel()
-            self.marketDataType_req()
-            self.tickDataOperations_req()
+        print("Executing requests")
+        self.marketDataType_req()
+        self.tickDataOperations_req()
 
-            print("Executing requests ... finished")
+        print("Executing requests ... finished")
 
     def keyboardInterrupt(self):
         self.nKeybInt += 1
@@ -301,7 +186,6 @@ class TestApp(TestWrapper, TestClient):
     def winError(self, text: str, lastError: int):
         super().winError(text, lastError)
 
-    @printWhenExecuting
     def tickDataOperations_req(self):
         # Requesting real time market data
 
@@ -315,7 +199,6 @@ class TestApp(TestWrapper, TestClient):
         self.reqSmartComponents(1013, "a6")
         # ! [reqsmartcomponents]
 
-    @printWhenExecuting
     def tickDataOperations_cancel(self):
         # Canceling the market data subscription
         # ! [cancelmktdata]
@@ -355,7 +238,6 @@ class TestApp(TestWrapper, TestClient):
         self.reqMarketDataType(MarketDataTypeEnum.DELAYED)
     # ! [reqmarketdatatype]
 
-    @printWhenExecuting
     def miscelaneous_req(self):
         # Request TWS' current time ***/
         self.reqCurrentTime()

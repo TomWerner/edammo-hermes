@@ -10,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/TWS API$Program.coverage" NAME="Program Coverage Results" MODIFIED="1489782364519" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/Python/Testbed" />
+    <SUITE FILE_PATH="coverage/TWS API$Program.coverage" NAME="Program Coverage Results" MODIFIED="1489784882858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/samples/Python/Testbed" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -32,8 +32,8 @@
       <file leaf-file-name="TickPriceDemo.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/samples/Python/Testbed/TickPriceDemo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="203" column="31" lean-forward="false" selection-start-line="203" selection-start-column="31" selection-end-line="203" selection-end-column="31" />
+            <state relative-caret-position="198">
+              <caret line="263" column="0" lean-forward="true" selection-start-line="263" selection-start-column="0" selection-end-line="263" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -56,6 +56,7 @@
       <find>decoder</find>
       <find>stockc</find>
       <find>marketdata</find>
+      <find>globalcan</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -117,6 +118,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Testbed" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TWS API" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TWS API" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="samples" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Python" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Testbed" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="log" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -426,10 +453,10 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930514" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32789317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32789317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41097924" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.41097924" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -482,34 +509,6 @@
           <folding>
             <element signature="e#0#209#1" expanded="false" />
             <element signature="e#595#1302#0" expanded="false" />
-            <element signature="e#1337#1464#0" expanded="false" />
-            <element signature="e#1495#1686#0" expanded="false" />
-            <element signature="e#1719#2008#0" expanded="false" />
-            <element signature="e#1747#1897#0" expanded="false" />
-            <element signature="e#1934#1959#0" expanded="false" />
-            <element signature="e#2001#2005#0" expanded="false" />
-            <element signature="e#2060#3640#0" expanded="false" />
-            <element signature="e#2097#2442#0" expanded="false" />
-            <element signature="e#2492#2831#0" expanded="false" />
-            <element signature="e#2874#3640#0" expanded="false" />
-            <element signature="e#3700#5161#0" expanded="false" />
-            <element signature="e#3751#4009#0" expanded="false" />
-            <element signature="e#4106#4389#0" expanded="false" />
-            <element signature="e#4439#5161#0" expanded="false" />
-            <element signature="e#6767#7081#0" expanded="false" />
-            <element signature="e#7132#7548#0" expanded="false" />
-            <element signature="e#7596#7935#0" expanded="false" />
-            <element signature="e#8007#8054#0" expanded="false" />
-            <element signature="e#8158#8365#0" expanded="false" />
-            <element signature="e#8845#8997#0" expanded="false" />
-            <element signature="e#9027#9142#0" expanded="false" />
-            <element signature="e#9256#9381#0" expanded="false" />
-            <element signature="e#9502#9535#0" expanded="false" />
-            <element signature="e#10156#10318#0" expanded="false" />
-            <element signature="e#10477#10590#0" expanded="false" />
-            <element signature="e#10727#10827#0" expanded="false" />
-            <element signature="e#10963#11168#0" expanded="false" />
-            <element signature="e#11481#11619#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -537,34 +536,6 @@
           <folding>
             <element signature="e#0#209#1" expanded="false" />
             <element signature="e#595#1302#0" expanded="false" />
-            <element signature="e#1337#1464#0" expanded="false" />
-            <element signature="e#1495#1686#0" expanded="false" />
-            <element signature="e#1719#2008#0" expanded="false" />
-            <element signature="e#1747#1897#0" expanded="false" />
-            <element signature="e#1934#1959#0" expanded="false" />
-            <element signature="e#2001#2005#0" expanded="false" />
-            <element signature="e#2060#3640#0" expanded="false" />
-            <element signature="e#2097#2442#0" expanded="false" />
-            <element signature="e#2492#2831#0" expanded="false" />
-            <element signature="e#2874#3640#0" expanded="false" />
-            <element signature="e#3700#5161#0" expanded="false" />
-            <element signature="e#3751#4009#0" expanded="false" />
-            <element signature="e#4106#4389#0" expanded="false" />
-            <element signature="e#4439#5161#0" expanded="false" />
-            <element signature="e#6767#7081#0" expanded="false" />
-            <element signature="e#7132#7548#0" expanded="false" />
-            <element signature="e#7596#7935#0" expanded="false" />
-            <element signature="e#8007#8054#0" expanded="false" />
-            <element signature="e#8158#8365#0" expanded="false" />
-            <element signature="e#8845#8997#0" expanded="false" />
-            <element signature="e#9027#9142#0" expanded="false" />
-            <element signature="e#9256#9381#0" expanded="false" />
-            <element signature="e#9502#9535#0" expanded="false" />
-            <element signature="e#10156#10318#0" expanded="false" />
-            <element signature="e#10477#10590#0" expanded="false" />
-            <element signature="e#10727#10827#0" expanded="false" />
-            <element signature="e#10963#11168#0" expanded="false" />
-            <element signature="e#11481#11619#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -644,8 +615,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/samples/Python/Testbed/TickPriceDemo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="203" column="31" lean-forward="false" selection-start-line="203" selection-start-column="31" selection-end-line="203" selection-end-column="31" />
+        <state relative-caret-position="198">
+          <caret line="263" column="0" lean-forward="true" selection-start-line="263" selection-start-column="0" selection-end-line="263" selection-end-column="0" />
           <folding />
         </state>
       </provider>
