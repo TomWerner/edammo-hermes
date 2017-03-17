@@ -68,53 +68,17 @@ class RequestMgr(Object):
         pass
 
 class Contracts:
-    @staticmethod
-    def USStock():
-        # ! [stkcontract]
-        contract = Contract()
-        contract.symbol = "IBKR"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        # In the API side, NASDAQ is always defined as ISLAND in the exchange field
-        contract.exchange = "ISLAND"
-        # ! [stkcontract]
-        return contract
 
     @staticmethod
-    def AMZN():
-        # ! [stkcontractwithprimary]
+    def get_contract(symbolIn, exchangeIn = "ISLAND", secTypeIn = "STK", currencyIn = "USD"):
         contract = Contract()
-        contract.symbol = "AMZN"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        contract.exchange = "ISLAND"
-        # Specify the Primary Exchange attribute to avoid contract ambiguity
-        # ! [stkcontractwithprimary]
+        contract.symbol = symbolIn
+        contract.secType = secTypeIn
+        contract.currency = currencyIn
+        contract.exchange = exchangeIn
+
         return contract
 
-    @staticmethod
-    def AAPL():
-        # ! [stkcontractwithprimary]
-        contract = Contract()
-        contract.symbol = "AAPL"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        contract.exchange = "ISLAND"
-        # Specify the Primary Exchange attribute to avoid contract ambiguity
-        # ! [stkcontractwithprimary]
-        return contract
-
-    @staticmethod
-    def MSFT():
-        # ! [stkcontractwithprimary]
-        contract = Contract()
-        contract.symbol = "MSFT"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        contract.exchange = "ISLAND"
-        # Specify the Primary Exchange attribute to avoid contract ambiguity
-        # ! [stkcontractwithprimary]
-        return contract
 
 # ! [socket_init]
 class TestApp(wrapper.EWrapper, EClient):
@@ -142,7 +106,6 @@ class TestApp(wrapper.EWrapper, EClient):
         super().nextValidId(orderId)
 
         logging.debug("setting nextValidOrderId: %d", orderId)
-        self.nextValidOrderId = orderId
         # ! [nextvalidid]
 
         # we can start now
@@ -190,9 +153,10 @@ class TestApp(wrapper.EWrapper, EClient):
         # Requesting real time market data
 
         # ! [reqmktdata]
-        self.reqMktData(1003, Contracts.MSFT(), "", False, False, [])
-        self.reqMktData(1101, Contracts.AMZN(), "", False, False, [])
-        self.reqMktData(1102, Contracts.AAPL(), "", False, False, [])
+        self.reqMktData(1101, Contracts.get_contract("AMZN"), "", False, False, [])
+        self.reqMktData(1102, Contracts.get_contract("AAPL"), "", False, False, [])
+        self.reqMktData(1103, Contracts.get_contract("MSFT"), "", False, False, [])
+        self.reqMktData(1104, Contracts.get_contract("FB"), "", False, False, [])
 
         # ! [reqsmartcomponents]
         # Requests description of map of single letter exchange codes to full exchange names
@@ -297,9 +261,6 @@ def main():
         app.run()
     except:
         raise
-    finally:
-        app.dumpTestCoverageSituation()
-        app.dumpReqAnsErrSituation()
 
 
 if __name__ == "__main__":
