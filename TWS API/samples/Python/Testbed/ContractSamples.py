@@ -147,30 +147,6 @@ class ContractSamples:
         #! [stkcontractwithprimary]
         return contract
 
-    @staticmethod
-    def AMZN():
-        # ! [stkcontractwithprimary]
-        contract = Contract()
-        contract.symbol = "AMZN"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        contract.exchange = "ISLAND"
-        # Specify the Primary Exchange attribute to avoid contract ambiguity
-        # ! [stkcontractwithprimary]
-        return contract
-
-    @staticmethod
-    def AAPL():
-        # ! [stkcontractwithprimary]
-        contract = Contract()
-        contract.symbol = "AAPL"
-        contract.secType = "STK"
-        contract.currency = "USD"
-        contract.exchange = "ISLAND"
-        # Specify the Primary Exchange attribute to avoid contract ambiguity
-        # ! [stkcontractwithprimary]
-        return contract
-
             
     @staticmethod
     def USStockAtSmart():
