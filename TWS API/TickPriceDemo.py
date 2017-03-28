@@ -25,6 +25,8 @@ from ibapi.order import *
 from ibapi.ticktype import *
 
 
+container = {"id": "", "price": "", "size": "", "time": ""}
+
 def SetupLogger():
     if not os.path.exists("log"):
         os.makedirs("log")
@@ -70,7 +72,7 @@ class RequestMgr(Object):
 class Contracts:
 
     @staticmethod
-    def get_contract(symbolIn, exchangeIn = "ISLAND", secTypeIn = "STK", currencyIn = "USD"):
+    def get_contract(symbolIn, exchangeIn = "IDEAL", secTypeIn = "CASH", currencyIn = "USD"):
         contract = Contract()
         contract.symbol = symbolIn
         contract.secType = secTypeIn
@@ -153,10 +155,10 @@ class TestApp(wrapper.EWrapper, EClient):
         # Requesting real time market data
 
         # ! [reqmktdata]
-        self.reqMktData(1101, Contracts.get_contract("AMZN"), "", False, False, [])
-        self.reqMktData(1102, Contracts.get_contract("AAPL"), "", False, False, [])
-        self.reqMktData(1103, Contracts.get_contract("MSFT"), "", False, False, [])
-        self.reqMktData(1104, Contracts.get_contract("FB"), "", False, False, [])
+        #self.reqMktData(1101, Contracts.get_contract("EUR"), "", False, False, [])
+        self.reqMktData(1102, Contracts.get_contract("AAPL", "ISLAND", "STK"), "", False, False, [])
+        #self.reqMktData(1103, Contracts.get_contract("MSFT"), "", False, False, [])
+        #self.reqMktData(1104, Contracts.get_contract("FB"), "", False, False, [])
 
         # ! [reqsmartcomponents]
         # Requests description of map of single letter exchange codes to full exchange names
@@ -176,6 +178,7 @@ class TestApp(wrapper.EWrapper, EClient):
                   attrib: TickAttrib):
         super().tickPrice(reqId, tickType, price, attrib)
         print("Tick Price. Ticker Id:", reqId, "Price:", price)
+        app.run.price = app.run.price + (price)
     # ! [tickprice]
 
 
@@ -184,6 +187,7 @@ class TestApp(wrapper.EWrapper, EClient):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         print("Tick Size. Ticker Id:", reqId, "Size:", size)
+        app.run.size = app.run.size + (size)
     # ! [ticksize]
 
 
@@ -209,6 +213,8 @@ class TestApp(wrapper.EWrapper, EClient):
         self.setServerLogLevel(1)
 
 def main():
+
+
     SetupLogger()
     logging.debug("now is %s", datetime.datetime.now())
     logging.getLogger().setLevel(logging.DEBUG)
@@ -259,6 +265,7 @@ def main():
                                                       app.twsConnectionTime()))
         # ! [connect]
         app.run()
+        print(container)
     except:
         raise
 
