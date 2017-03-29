@@ -5,9 +5,9 @@ subject to the terms and conditions of the IB API Non-Commercial License or the
 """
 
 import argparse
-import datetime
 import collections
-import inspect
+import datetime
+import queue
 
 import logging
 import time
@@ -18,11 +18,15 @@ from ibapi.client import EClient
 from ibapi.utils import iswrapper
 
 # types
-from ibapi.common import *
 from ibapi.order_condition import *
-from ibapi.contract import *
-from ibapi.order import *
 from ibapi.ticktype import *
+from ibapi import (comm)
+from ibapi.common import *
+from ibapi.contract import Contract
+from ibapi.utils import (BadMessage)
+from ibapi.errors import *
+
+
 
 
 def SetupLogger():
@@ -70,7 +74,7 @@ class RequestMgr(Object):
 class Contracts:
 
     @staticmethod
-    def get_contract(symbolIn, exchangeIn = "ISLAND", secTypeIn = "STK", currencyIn = "USD"):
+    def get_contract(symbolIn, exchangeIn = "IDEAL", secTypeIn = "CASH", currencyIn = "USD"):
         contract = Contract()
         contract.symbol = symbolIn
         contract.secType = secTypeIn
@@ -82,6 +86,10 @@ class Contracts:
 
 # ! [socket_init]
 class TestApp(wrapper.EWrapper, EClient):
+    container = {"id": "", "price": "", "size": "", "time": ""}
+    price = ()
+    size = ()
+
     def __init__(self):
         wrapper.EWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
@@ -91,6 +99,50 @@ class TestApp(wrapper.EWrapper, EClient):
         self.nextValidOrderId = None
         self.permId2ord = {}
         self.reqId2nErr = collections.defaultdict(int)
+
+
+    def run(self):
+        """This is the function that has the message loop."""
+        threshold = datetime.datetime.now()
+        threshold = threshold + datetime.timedelta(0,30)
+        try:
+            while not self.done and (self.conn.isConnected()
+                        or not self.msg_queue.empty()):
+                if datetime.datetime.now() <= threshold:
+                    try:
+                        try:
+                            text = self.msg_queue.get(block=True, timeout=0.2)
+                            if len(text) > MAX_MSG_LEN:
+                                self.wrapper.error(NO_VALID_ID, BAD_LENGTH.code(),
+                                    "%s:%d:%s" % (BAD_LENGTH.msg(), len(text), text))
+                                self.disconnect()
+                                break
+                        except queue.Empty:
+                            logging.debug("queue.get: empty")
+                        else:
+                            fields = comm.read_fields(text)
+                            logging.debug("fields %s", fields)
+                            self.decoder.interpret(fields)
+                    except (KeyboardInterrupt, SystemExit):
+                        logging.info("detected KeyboardInterrupt, SystemExit")
+                        self.keyboardInterrupt()
+                        self.keyboardInterruptHard()
+                    except BadMessage:
+                        logging.info("BadMessage")
+                        self.conn.disconnect()
+
+                    logging.debug("conn:%d queue.sz:%d",
+                             self.conn.isConnected(),
+                             self.msg_queue.qsize())
+                else:
+                    threshold = threshold + datetime.timedelta(seconds=30)
+                    self.container["price"] = sum(self.price) / len(self.price)
+                    self.container["size"] = sum(self.size) / len(self.size)
+                    print(self.container)
+                    self.price = ()
+                    self.size = ()
+        finally:
+            self.disconnect()
 
 
     @iswrapper
@@ -153,10 +205,10 @@ class TestApp(wrapper.EWrapper, EClient):
         # Requesting real time market data
 
         # ! [reqmktdata]
-        self.reqMktData(1101, Contracts.get_contract("AMZN"), "", False, False, [])
-        self.reqMktData(1102, Contracts.get_contract("AAPL"), "", False, False, [])
-        self.reqMktData(1103, Contracts.get_contract("MSFT"), "", False, False, [])
-        self.reqMktData(1104, Contracts.get_contract("FB"), "", False, False, [])
+        #self.reqMktData(1101, Contracts.get_contract("EUR"), "", False, False, [])
+        self.reqMktData(1102, Contracts.get_contract("AAPL", "ISLAND", "STK"), "", False, False, [])
+        #self.reqMktData(1103, Contracts.get_contract("MSFT"), "", False, False, [])
+        #self.reqMktData(1104, Contracts.get_contract("FB"), "", False, False, [])
 
         # ! [reqsmartcomponents]
         # Requests description of map of single letter exchange codes to full exchange names
@@ -166,7 +218,7 @@ class TestApp(wrapper.EWrapper, EClient):
     def tickDataOperations_cancel(self):
         # Canceling the market data subscription
         # ! [cancelmktdata]
-        self.cancelMktData(1101)
+        #self.cancelMktData(1101)
         self.cancelMktData(1102)
         # ! [cancelmktdata]
 
@@ -176,6 +228,9 @@ class TestApp(wrapper.EWrapper, EClient):
                   attrib: TickAttrib):
         super().tickPrice(reqId, tickType, price, attrib)
         print("Tick Price. Ticker Id:", reqId, "Price:", price)
+        self.price = self.price + (price,)
+        self.container["id"] = reqId
+        print(self.price)
     # ! [tickprice]
 
 
@@ -184,6 +239,8 @@ class TestApp(wrapper.EWrapper, EClient):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         print("Tick Size. Ticker Id:", reqId, "Size:", size)
+        self.size = self.size + (size,)
+        print(self.size)
     # ! [ticksize]
 
 
@@ -209,6 +266,8 @@ class TestApp(wrapper.EWrapper, EClient):
         self.setServerLogLevel(1)
 
 def main():
+
+
     SetupLogger()
     logging.debug("now is %s", datetime.datetime.now())
     logging.getLogger().setLevel(logging.DEBUG)
@@ -259,6 +318,7 @@ def main():
                                                       app.twsConnectionTime()))
         # ! [connect]
         app.run()
+
     except:
         raise
 
