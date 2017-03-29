@@ -108,8 +108,6 @@ class TestApp(wrapper.EWrapper, EClient):
         try:
             while not self.done and (self.conn.isConnected()
                         or not self.msg_queue.empty()):
-                self.price = ()
-                self.size = ()
                 if datetime.datetime.now() <= threshold:
                     try:
                         try:
@@ -141,6 +139,8 @@ class TestApp(wrapper.EWrapper, EClient):
                     self.container["price"] = sum(self.price)
                     self.container["size"] = sum(self.size)
                     print(self.container)
+                    self.price = ()
+                    self.size = ()
         finally:
             self.disconnect()
 
@@ -229,6 +229,7 @@ class TestApp(wrapper.EWrapper, EClient):
         super().tickPrice(reqId, tickType, price, attrib)
         print("Tick Price. Ticker Id:", reqId, "Price:", price)
         self.price = self.price + (price,)
+        print(self.price)
     # ! [tickprice]
 
 
@@ -238,6 +239,7 @@ class TestApp(wrapper.EWrapper, EClient):
         super().tickSize(reqId, tickType, size)
         print("Tick Size. Ticker Id:", reqId, "Size:", size)
         self.size = self.size + (size,)
+        print(self.size)
     # ! [ticksize]
 
 
