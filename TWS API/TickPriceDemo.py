@@ -5,9 +5,9 @@ subject to the terms and conditions of the IB API Non-Commercial License or the
 """
 
 import argparse
-import datetime
 import collections
-import inspect
+import datetime
+import queue
 
 import logging
 import time
@@ -18,14 +18,16 @@ from ibapi.client import EClient
 from ibapi.utils import iswrapper
 
 # types
-from ibapi.common import *
 from ibapi.order_condition import *
-from ibapi.contract import *
-from ibapi.order import *
 from ibapi.ticktype import *
+from ibapi import (comm)
+from ibapi.common import *
+from ibapi.contract import Contract
+from ibapi.utils import (BadMessage)
+from ibapi.errors import *
 
 
-container = {"id": "", "price": "", "size": "", "time": ""}
+
 
 def SetupLogger():
     if not os.path.exists("log"):
@@ -84,6 +86,10 @@ class Contracts:
 
 # ! [socket_init]
 class TestApp(wrapper.EWrapper, EClient):
+    container = {"id": "", "price": "", "size": "", "time": ""}
+    price = ()
+    size = ()
+
     def __init__(self):
         wrapper.EWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
@@ -93,6 +99,50 @@ class TestApp(wrapper.EWrapper, EClient):
         self.nextValidOrderId = None
         self.permId2ord = {}
         self.reqId2nErr = collections.defaultdict(int)
+
+
+    def run(self):
+        """This is the function that has the message loop."""
+        threshold = datetime.datetime.now()
+        threshold = threshold + datetime.timedelta(0,30)
+        try:
+            while not self.done and (self.conn.isConnected()
+                        or not self.msg_queue.empty()):
+                self.price = ()
+                self.size = ()
+                if datetime.datetime.now() <= threshold:
+                    try:
+                        try:
+                            text = self.msg_queue.get(block=True, timeout=0.2)
+                            if len(text) > MAX_MSG_LEN:
+                                self.wrapper.error(NO_VALID_ID, BAD_LENGTH.code(),
+                                    "%s:%d:%s" % (BAD_LENGTH.msg(), len(text), text))
+                                self.disconnect()
+                                break
+                        except queue.Empty:
+                            logging.debug("queue.get: empty")
+                        else:
+                            fields = comm.read_fields(text)
+                            logging.debug("fields %s", fields)
+                            self.decoder.interpret(fields)
+                    except (KeyboardInterrupt, SystemExit):
+                        logging.info("detected KeyboardInterrupt, SystemExit")
+                        self.keyboardInterrupt()
+                        self.keyboardInterruptHard()
+                    except BadMessage:
+                        logging.info("BadMessage")
+                        self.conn.disconnect()
+
+                    logging.debug("conn:%d queue.sz:%d",
+                             self.conn.isConnected(),
+                             self.msg_queue.qsize())
+                else:
+                    threshold = threshold + datetime.timedelta(seconds=30)
+                    self.container["price"] = sum(self.price)
+                    self.container["size"] = sum(self.size)
+                    print(self.container)
+        finally:
+            self.disconnect()
 
 
     @iswrapper
@@ -168,7 +218,7 @@ class TestApp(wrapper.EWrapper, EClient):
     def tickDataOperations_cancel(self):
         # Canceling the market data subscription
         # ! [cancelmktdata]
-        self.cancelMktData(1101)
+        #self.cancelMktData(1101)
         self.cancelMktData(1102)
         # ! [cancelmktdata]
 
@@ -178,7 +228,7 @@ class TestApp(wrapper.EWrapper, EClient):
                   attrib: TickAttrib):
         super().tickPrice(reqId, tickType, price, attrib)
         print("Tick Price. Ticker Id:", reqId, "Price:", price)
-        app.run.price = app.run.price + (price)
+        self.price = self.price + (price,)
     # ! [tickprice]
 
 
@@ -187,7 +237,7 @@ class TestApp(wrapper.EWrapper, EClient):
     def tickSize(self, reqId: TickerId, tickType: TickType, size: int):
         super().tickSize(reqId, tickType, size)
         print("Tick Size. Ticker Id:", reqId, "Size:", size)
-        app.run.size = app.run.size + (size)
+        self.size = self.size + (size,)
     # ! [ticksize]
 
 
@@ -265,7 +315,7 @@ def main():
                                                       app.twsConnectionTime()))
         # ! [connect]
         app.run()
-        print(container)
+
     except:
         raise
 
