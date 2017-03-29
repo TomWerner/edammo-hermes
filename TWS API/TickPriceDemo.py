@@ -136,8 +136,8 @@ class TestApp(wrapper.EWrapper, EClient):
                              self.msg_queue.qsize())
                 else:
                     threshold = threshold + datetime.timedelta(seconds=30)
-                    self.container["price"] = sum(self.price)
-                    self.container["size"] = sum(self.size)
+                    self.container["price"] = sum(self.price) / len(self.price)
+                    self.container["size"] = sum(self.size) / len(self.size)
                     print(self.container)
                     self.price = ()
                     self.size = ()
@@ -229,6 +229,7 @@ class TestApp(wrapper.EWrapper, EClient):
         super().tickPrice(reqId, tickType, price, attrib)
         print("Tick Price. Ticker Id:", reqId, "Price:", price)
         self.price = self.price + (price,)
+        self.container["id"] = reqId
         print(self.price)
     # ! [tickprice]
 
